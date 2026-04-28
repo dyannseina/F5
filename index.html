@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yiling | 黄玉灵</title>
+    <title>Yiling盧娜 | 黄玉灵</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     
     <style>
@@ -554,6 +554,10 @@
             });
         }
 
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const btn = document.getElementById('themeToggle');
+            btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
         });
 
         window.onload = () => {
