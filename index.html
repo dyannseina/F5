@@ -9,14 +9,15 @@
     
     <style>
         :root {
-            var(--primary): #a855f7;
-            var(--secondary): #22d3ee;
-            var(--accent): #f472b6;
-            --bg: #030712;
-            --card-bg: rgba(255, 255, 255, 0.03);
+            /* Tông màu thơ mộng mới */
+            --primary: #f472b6;    /* Hồng phấn */
+            --secondary: #c084fc;  /* Tím pastel */
+            --accent: #818cf8;     /* Xanh mây trời */
+            --bg: #171124;         /* Bầu trời đêm tĩnh lặng */
+            --card-bg: rgba(255, 255, 255, 0.04);
             --card-hover: rgba(255, 255, 255, 0.08);
-            --border: rgba(255, 255, 255, 0.08);
-            --border-hover: rgba(255, 255, 255, 0.25);
+            --border: rgba(255, 255, 255, 0.1);
+            --border-hover: rgba(255, 255, 255, 0.3);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -35,13 +36,13 @@
         /* --- LOADING SCREEN --- */
         #loader {
             position: fixed; inset: 0; 
-            background: #030712;
+            background: #171124;
             z-index: 99990; 
             display: flex; align-items: center; justify-content: center;
             transition: opacity 0.8s ease, visibility 0.8s;
         }
         .loader-content {
-            display: flex; flex-direction: column; align-items: center; gap: 25px;
+            display: flex; flex-direction: column; align-items: center; gap: 20px;
         }
         
         .loading-wrapper {
@@ -51,12 +52,26 @@
         .loading-wrapper.hidden { display: none; opacity: 0; }
         
         .loading-text {
-            font-size: 1.8rem; font-weight: 800; letter-spacing: 6px;
+            font-size: 2rem; font-weight: 800; letter-spacing: 6px;
             background: linear-gradient(to right, var(--primary), var(--secondary));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             animation: pulseText 1.5s infinite alternate;
             text-transform: uppercase;
         }
+        
+        /* CÂU CHÀO MỪNG */
+        .loading-greeting {
+            font-size: 1rem;
+            color: var(--primary);
+            font-style: italic;
+            font-weight: 300;
+            letter-spacing: 1px;
+            text-align: center;
+            opacity: 0.8;
+            margin-bottom: 5px;
+            animation: float 3s ease-in-out infinite;
+        }
+
         .loading-bar-container {
             width: 220px; height: 4px; background: rgba(255,255,255,0.1);
             border-radius: 10px; overflow: hidden; position: relative;
@@ -64,11 +79,11 @@
         .loading-bar {
             height: 100%; width: 0%;
             background: linear-gradient(90deg, var(--primary), var(--secondary));
-            box-shadow: 0 0 15px var(--secondary);
+            box-shadow: 0 0 15px var(--primary);
             animation: loadBar 1.8s ease-in-out forwards;
         }
         .loading-status {
-            font-size: 0.75rem; letter-spacing: 2px; color: rgba(255,255,255,0.5);
+            font-size: 0.75rem; letter-spacing: 2px; color: rgba(255,255,255,0.6);
             text-transform: uppercase; font-weight: 600;
             animation: blink 1s infinite;
         }
@@ -78,7 +93,7 @@
             color: #fff; border: none; padding: 18px 45px; border-radius: 50px;
             font-size: 1.1rem; font-weight: 800; cursor: pointer; letter-spacing: 2px;
             transition: all 0.4s ease; 
-            box-shadow: 0 0 30px rgba(34, 211, 238, 0.5), inset 0 0 10px rgba(255,255,255,0.2);
+            box-shadow: 0 0 30px rgba(192, 132, 252, 0.5), inset 0 0 10px rgba(255,255,255,0.2);
             font-family: 'Plus Jakarta Sans', sans-serif;
             display: flex; align-items: center; gap: 12px;
             text-transform: uppercase;
@@ -93,9 +108,9 @@
         .enter-btn.hidden { display: none; }
         #loader.hidden { opacity: 0; visibility: hidden; }
 
-        @keyframes pulseText { 0% { opacity: 0.7; text-shadow: 0 0 10px rgba(168, 85, 247, 0.3); } 100% { opacity: 1; text-shadow: 0 0 25px rgba(34, 211, 238, 0.8); } }
+        @keyframes pulseText { 0% { opacity: 0.7; text-shadow: 0 0 10px rgba(244, 114, 182, 0.3); } 100% { opacity: 1; text-shadow: 0 0 25px rgba(192, 132, 252, 0.8); } }
         @keyframes loadBar { 0% { width: 0%; } 80% { width: 90%; } 100% { width: 100%; } }
-        @keyframes pulseGlow { 0% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); } 100% { box-shadow: 0 0 45px rgba(34, 211, 238, 0.8); } }
+        @keyframes pulseGlow { 0% { box-shadow: 0 0 20px rgba(244, 114, 182, 0.4); } 100% { box-shadow: 0 0 45px rgba(192, 132, 252, 0.8); } }
 
         /* --- CUSTOM CURSOR --- */
         @media (pointer: fine) {
@@ -117,16 +132,17 @@
         /* --- BACKGROUND LAYERS --- */
         .gif-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('https://files.catbox.moe/be2jxe.gif'); 
+            /* Ảnh nền anime mây trôi thơ mộng */
+            background-image: url('https://i.pinimg.com/originals/90/a6/f3/90a6f3bdf5dc4d8305c219582d921db5.gif'); 
             background-size: cover; background-position: center;
-            opacity: 0.1; filter: blur(5px); z-index: -5;
+            opacity: 0.25; filter: blur(3px); z-index: -5;
         }
 
         .bg-blobs { position: fixed; inset: 0; z-index: -4; overflow: hidden; pointer-events: none; }
         .blob { position: absolute; filter: blur(100px); opacity: 0.35; border-radius: 50%; animation: floatBlob 20s infinite alternate ease-in-out; transition: background 0.5s ease;}
         .blob-1 { top: -20%; left: -10%; width: 50vw; height: 50vw; background: var(--primary); }
         .blob-2 { bottom: -20%; right: -10%; width: 60vw; height: 60vw; background: var(--secondary); animation-delay: -5s; }
-        .blob-3 { top: 30%; left: 30%; width: 40vw; height: 40vw; background: var(--accent); animation-delay: -10s; opacity: 0.15; }
+        .blob-3 { top: 30%; left: 30%; width: 40vw; height: 40vw; background: var(--accent); animation-delay: -10s; opacity: 0.2; }
 
         #canvas-stars { position: fixed; top: 0; left: 0; z-index: -3; opacity: 0.8; }
 
@@ -142,7 +158,7 @@
             cursor: pointer; transition: transform 0.3s ease;
         }
         .theme-btn:hover { transform: scale(1.2); }
-        .theme-purple { background: linear-gradient(45deg, #a855f7, #22d3ee); }
+        .theme-purple { background: linear-gradient(45deg, #f472b6, #c084fc); }
         .theme-blue { background: linear-gradient(45deg, #3b82f6, #06b6d4); }
         .theme-green { background: linear-gradient(45deg, #10b981, #34d399); }
 
@@ -165,7 +181,7 @@
             border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
             padding: 4px; 
             animation: morphing 12s infinite alternate, gradientShift 6s ease infinite;
-            box-shadow: 0 0 40px rgba(168, 85, 247, 0.3), inset 0 0 20px rgba(255,255,255,0.1);
+            box-shadow: 0 0 40px rgba(244, 114, 182, 0.3), inset 0 0 20px rgba(255,255,255,0.2);
             transition: all 0.5s ease;
         }
         
@@ -175,7 +191,7 @@
 
         .avatar-img {
             width: 100%; height: 100%; border-radius: inherit;
-            object-fit: cover; border: 4px solid rgba(15, 23, 42, 0.8);
+            object-fit: cover; border: 4px solid rgba(15, 23, 42, 0.6);
             transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .avatar-container:hover .avatar-img { transform: scale(1.06) rotate(3deg); }
@@ -183,15 +199,15 @@
         h1 {
             font-size: clamp(2.5rem, 8vw, 5rem); font-weight: 800; letter-spacing: -1px;
             margin-top: 25px; margin-bottom: 5px; position: relative;
-            background: linear-gradient(to right, #fff, var(--secondary), #f8fafc, var(--primary));
+            background: linear-gradient(to right, #fff, var(--secondary), #fbcfe8, var(--primary));
             background-size: 300%; -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: shine 10s linear infinite;
-            text-shadow: 0 0 40px rgba(34, 211, 238, 0.15);
+            text-shadow: 0 0 40px rgba(192, 132, 252, 0.2);
         }
 
         .typing-container {
-            font-size: clamp(0.7rem, 2vw, 0.85rem); letter-spacing: 4px; color: var(--secondary);
+            font-size: clamp(0.7rem, 2vw, 0.85rem); letter-spacing: 4px; color: var(--primary);
             text-transform: uppercase; margin-bottom: 40px; opacity: 0.9;
             min-height: 20px; font-weight: 600; transition: color 0.5s;
         }
@@ -210,7 +226,7 @@
             background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border); border-radius: 30px; 
             padding: clamp(25px, 5vw, 40px); margin-bottom: 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
             position: relative; overflow: hidden; transition: border-color 0.5s ease;
         }
         
@@ -235,7 +251,7 @@
         .skill-tag:hover {
             background: var(--primary); color: #fff;
             border-color: var(--primary); transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(168, 85, 247, 0.4);
+            box-shadow: 0 5px 15px rgba(244, 114, 182, 0.4);
         }
 
         /* --- SOCIAL ICONS --- */
@@ -331,65 +347,8 @@
             transition: all 0.3s ease; backdrop-filter: blur(10px);
         }
         .back-to-top.show { opacity: 1; visibility: visible; }
-        .back-to-top:hover { transform: translateY(-5px); background: var(--secondary); color: #000; box-shadow: 0 5px 15px rgba(34, 211, 238, 0.3); }
+        .back-to-top:hover { transform: translateY(-5px); background: var(--secondary); color: #000; box-shadow: 0 5px 15px rgba(192, 132, 252, 0.4); }
 
-        /* --- LỜI NHẮN FORM --- */
-        .message-form { display: flex; flex-direction: column; gap: 15px; margin-top: 15px; }
-        .message-form input, .message-form textarea {
-            width: 100%; padding: 15px; border-radius: 15px;
-            background: rgba(0,0,0,0.2); border: 1px solid var(--border);
-            color: #fff; font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 0.95rem; outline: none; transition: all 0.3s ease; resize: none;
-        }
-        .message-form input::placeholder, .message-form textarea::placeholder { color: rgba(255,255,255,0.4); }
-        .message-form input:focus, .message-form textarea:focus {
-            border-color: var(--secondary); box-shadow: 0 0 15px rgba(34, 211, 238, 0.2); background: rgba(255,255,255,0.05);
-        }
-        .submit-btn {
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            color: #fff; border: none; padding: 15px; border-radius: 15px;
-            font-size: 1rem; font-weight: 600; cursor: pointer;
-            transition: all 0.4s ease; display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-        @media (pointer: fine) { .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(34, 211, 238, 0.3); } }
-        
-        .toast {
-            position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
-            background: var(--secondary); color: #000; padding: 12px 25px;
-            border-radius: 30px; font-weight: 700; font-size: 0.9rem;
-            box-shadow: 0 10px 30px rgba(34, 211, 238, 0.4); z-index: 10000;
-            transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .toast.show { bottom: 30px; }
-
-        /* --- MESSAGE BOARD CSS (FIREBASE) --- */
-        .message-board {
-            margin-top: 25px;
-            max-height: 300px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            padding-right: 10px;
-        }
-        .message-board::-webkit-scrollbar { width: 6px; }
-        .message-board::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 10px; }
-        .message-board::-webkit-scrollbar-thumb { background: var(--secondary); border-radius: 10px; }
-
-        .msg-item {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 12px 18px;
-            border-radius: 0 15px 15px 15px; 
-            animation: revealMsg 0.4s ease forwards;
-        }
-        .msg-name {
-            font-size: 0.8rem; font-weight: 800; color: var(--secondary);
-            margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;
-        }
-        .msg-text { font-size: 0.95rem; font-weight: 300; word-break: break-word; }
-        .msg-time { font-size: 0.65rem; color: rgba(255,255,255,0.4); margin-top: 5px; text-align: right; }
-        
         /* --- ANIMATIONS --- */
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
         @keyframes floatBlob { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(40px, -40px) scale(1.05); } }
@@ -399,8 +358,7 @@
         @keyframes shine { to { background-position: 300% center; } }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
         @keyframes bounce { 0% { height: 20%; } 100% { height: 100%; } }
-        @keyframes avatarPulse { 0% { box-shadow: 0 0 40px rgba(168, 85, 247, 0.3), inset 0 0 20px rgba(255,255,255,0.1); } 50% { box-shadow: 0 0 60px rgba(34, 211, 238, 0.5), inset 0 0 30px rgba(255,255,255,0.2); } 100% { box-shadow: 0 0 40px rgba(168, 85, 247, 0.3), inset 0 0 20px rgba(255,255,255,0.1); } }
-        @keyframes revealMsg { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes avatarPulse { 0% { box-shadow: 0 0 40px rgba(244, 114, 182, 0.3), inset 0 0 20px rgba(255,255,255,0.2); } 50% { box-shadow: 0 0 60px rgba(192, 132, 252, 0.5), inset 0 0 30px rgba(255,255,255,0.3); } 100% { box-shadow: 0 0 40px rgba(244, 114, 182, 0.3), inset 0 0 20px rgba(255,255,255,0.2); } }
 
         /* Responsive Mobile */
         @media (max-width: 500px) {
@@ -418,13 +376,14 @@
         <div class="loader-content">
             <div id="loadingWrapper" class="loading-wrapper">
                 <div class="loading-text">YILING 盧娜</div>
+                <div class="loading-greeting">Chào mừng bạn..✨</div>
                 <div class="loading-bar-container">
                     <div class="loading-bar"></div>
                 </div>
-                <div class="loading-status">Đang tải dữ liệu...</div>
+                <div class="loading-status">Đang tải...</div>
             </div>
             <button id="enterBtn" class="enter-btn hidden">
-                <i class="fas fa-headphones-alt"></i> Vào Trang Ngay
+                <i class="fas fa-headphones-alt"></i> Vào
             </button>
         </div>
     </div>
@@ -485,7 +444,7 @@
 
         <div class="game-grid reveal delay-3">
             <div class="game-badge">
-                <div class="game-icon-wrap" style="color: var(--secondary); box-shadow: inset 0 0 10px rgba(34,211,238,0.2);"><i class="fas fa-shield-cat"></i></div>
+                <div class="game-icon-wrap" style="color: #60a5fa; box-shadow: inset 0 0 10px rgba(96, 165, 250, 0.2);"><i class="fas fa-shield-cat"></i></div>
                 <div>
                     <p style="font-size: 0.7rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px;">Liên Quân Mobile</p>
                     <p style="font-weight: 600; font-size: 1.15rem; letter-spacing: 0.5px;">Ƴiling盧娜</p>
@@ -493,7 +452,7 @@
             </div>
             
             <div class="game-badge">
-                <div class="game-icon-wrap" style="color: var(--primary); box-shadow: inset 0 0 10px rgba(168,85,247,0.2);"><i class="fas fa-dragon"></i></div>
+                <div class="game-icon-wrap" style="color: var(--primary); box-shadow: inset 0 0 10px rgba(244, 114, 182, 0.2);"><i class="fas fa-dragon"></i></div>
                 <div>
                     <p style="font-size: 0.7rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px;">王者荣耀</p>
                     <p style="font-weight: 600; font-size: 1.15rem; letter-spacing: 0.5px;">hggan</p>
@@ -527,22 +486,7 @@
                 <div id="prog-fill"></div>
             </div>
         </div>
-
-        <div class="glass-card reveal delay-3">
-            <h2 style="font-size: 0.75rem; letter-spacing: 5px; color: var(--secondary); margin-bottom: 10px; text-transform: uppercase; text-align: center; font-weight: 800; transition: color 0.5s;">Gửi Lời Nhắn</h2>
-            
-            <form id="messageForm" class="message-form">
-                <input type="text" id="senderName" placeholder="Tên của bạn..." required autocomplete="off">
-                <textarea id="senderMsg" placeholder="Gõ thử gì đó gửi cho mình nhé..." rows="3" required></textarea>
-                <button type="submit" class="submit-btn"><i class="fas fa-paper-plane"></i> Gửi</button>
-            </form>
-
-            <div id="messageBoard" class="message-board">
-                </div>
-        </div>
     </div>
-
-    <div id="toastMessage" class="toast">Đã gửi lời nhắn thành công!</div>
 
     <div class="back-to-top" id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
         <i class="fas fa-chevron-up"></i>
@@ -585,7 +529,7 @@
             }
             animateCursor();
 
-            document.querySelectorAll('a, button, .prog-bar-container, .game-badge, .theme-btn, .skill-tag, input, textarea').forEach(el => {
+            document.querySelectorAll('a, button, .prog-bar-container, .game-badge, .theme-btn, .skill-tag').forEach(el => {
                 el.onmouseenter = () => {
                     outline.style.width = '55px'; outline.style.height = '55px';
                     outline.style.background = 'rgba(255,255,255,0.1)'; outline.style.borderColor = '#fff';
@@ -626,7 +570,7 @@
             const particleCount = window.innerWidth < 768 ? 30 : 60; 
             particles = Array.from({length: particleCount}, () => ({
                 x: Math.random() * canvas.width, y: Math.random() * canvas.height,
-                size: Math.random() * 1.5, vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3
+                size: Math.random() * 1.5, vx: (Math.random() - 0.5) * 0.2, vy: (Math.random() - 0.5) * 0.2
             }));
         }
 
@@ -715,9 +659,9 @@
         function setTheme(color) {
             const root = document.documentElement;
             if (color === 'purple') {
-                root.style.setProperty('--primary', '#a855f7');
-                root.style.setProperty('--secondary', '#22d3ee');
-                root.style.setProperty('--accent', '#f472b6');
+                root.style.setProperty('--primary', '#f472b6');
+                root.style.setProperty('--secondary', '#c084fc');
+                root.style.setProperty('--accent', '#818cf8');
             } else if (color === 'blue') {
                 root.style.setProperty('--primary', '#3b82f6');
                 root.style.setProperty('--secondary', '#60a5fa');
@@ -732,88 +676,6 @@
         // Run Init
         initStars(); drawStars(); 
         window.addEventListener('resize', () => { initStars(); reveal(); });
-    </script>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-
-        // BẠN CẦN THAY THẾ ĐOẠN NÀY BẰNG CẤU HÌNH FIREBASE CỦA BẠN (XEM HƯỚNG DẪN BƯỚC 4 TRƯỚC ĐÓ)
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-
-        // Khởi tạo Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const messagesRef = ref(db, 'guestbook_messages');
-
-        const messageForm = document.getElementById('messageForm');
-        const toastMessage = document.getElementById('toastMessage');
-        const messageBoard = document.getElementById('messageBoard');
-
-        // Hàm chống XSS để bảo mật
-        function escapeHTML(str) {
-            return str.replace(/[&<>'"]/g, 
-                tag => ({
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    "'": '&#39;',
-                    '"': '&quot;'
-                }[tag])
-            );
-        }
-
-        // 1. Tải tin nhắn từ Database và hiển thị lên giao diện
-        onChildAdded(messagesRef, (snapshot) => {
-            const data = snapshot.val();
-            
-            const msgDiv = document.createElement('div');
-            msgDiv.classList.add('msg-item');
-            
-            const date = new Date(data.timestamp);
-            const timeString = `${date.getHours()}:${date.getMinutes() < 10 ? '0' : ''}${date.getMinutes()} - ${date.getDate()}/${date.getMonth() + 1}`;
-
-            msgDiv.innerHTML = `
-                <div class="msg-name"><i class="fas fa-user-circle"></i> ${escapeHTML(data.name)}</div>
-                <div class="msg-text">${escapeHTML(data.message)}</div>
-                <div class="msg-time">${timeString}</div>
-            `;
-            
-            messageBoard.prepend(msgDiv); 
-        });
-
-        // 2. Xử lý khi bấm nút "Gửi"
-        if(messageForm) {
-            messageForm.addEventListener('submit', (e) => {
-                e.preventDefault(); 
-                
-                const senderName = document.getElementById('senderName').value;
-                const senderMsg = document.getElementById('senderMsg').value;
-
-                // Push lên Firebase Database
-                push(messagesRef, {
-                    name: senderName,
-                    message: senderMsg,
-                    timestamp: Date.now()
-                }).then(() => {
-                    toastMessage.style.background = getComputedStyle(document.documentElement).getPropertyValue('--secondary');
-                    toastMessage.classList.add('show'); 
-                    messageForm.reset(); 
-                    setTimeout(() => { toastMessage.classList.remove('show'); }, 3000);
-                }).catch((error) => {
-                    console.error("Lỗi gửi tin nhắn: ", error);
-                    alert("Đã xảy ra lỗi kết nối cơ sở dữ liệu! Hãy kiểm tra lại Firebase config.");
-                });
-            });
-        }
     </script>
 </body>
 </html>
