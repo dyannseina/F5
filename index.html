@@ -3,679 +3,555 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yiling盧娜</title>
+    <title>Yiling</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            /* Tông màu thơ mộng mới */
-            --primary: #f472b6;    /* Hồng phấn */
-            --secondary: #c084fc;  /* Tím pastel */
-            --accent: #818cf8;     /* Xanh mây trời */
-            --bg: #171124;         /* Bầu trời đêm tĩnh lặng */
-            --card-bg: rgba(255, 255, 255, 0.04);
-            --card-hover: rgba(255, 255, 255, 0.08);
-            --border: rgba(255, 255, 255, 0.1);
-            --border-hover: rgba(255, 255, 255, 0.3);
+            /* Theme mặc định (Hồng/Tím) */
+            --primary: #f472b6;
+            --secondary: #c084fc;
+            --bg-color: #09090b;
+            --card-bg: rgba(24, 24, 27, 0.4);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #a1a1aa;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        [data-theme="blue"] { --primary: #3b82f6; --secondary: #60a5fa; }
+        [data-theme="green"] { --primary: #10b981; --secondary: #34d399; }
+        [data-theme="orange"] { --primary: #f97316; --secondary: #fb923c; }
+        [data-theme="purple"] { --primary: #9333ea; --secondary: #a855f7; }
+        [data-theme="cyan"] { --primary: #06b6d4; --secondary: #22d3ee; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            color: #f8fafc;
-            background: var(--bg);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
             overflow-x: hidden;
-            line-height: 1.6;
-            scrollbar-width: none; 
-            transition: background 0.5s ease;
-        }
-        body::-webkit-scrollbar { display: none; }
-
-        /* --- LOADING SCREEN --- */
-        #loader {
-            position: fixed; inset: 0; 
-            background: #171124;
-            z-index: 99990; 
-            display: flex; align-items: center; justify-content: center;
-            transition: opacity 0.8s ease, visibility 0.8s;
-        }
-        .loader-content {
-            display: flex; flex-direction: column; align-items: center; gap: 20px;
-        }
-        
-        .loading-wrapper {
-            display: flex; flex-direction: column; align-items: center; gap: 15px;
-            transition: opacity 0.5s ease;
-        }
-        .loading-wrapper.hidden { display: none; opacity: 0; }
-        
-        .loading-text {
-            font-size: 2rem; font-weight: 800; letter-spacing: 6px;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            animation: pulseText 1.5s infinite alternate;
-            text-transform: uppercase;
-        }
-        
-        /* CÂU CHÀO MỪNG */
-        .loading-greeting {
-            font-size: 1rem;
-            color: var(--primary);
-            font-style: italic;
-            font-weight: 300;
-            letter-spacing: 1px;
-            text-align: center;
-            opacity: 0.8;
-            margin-bottom: 5px;
-            animation: float 3s ease-in-out infinite;
+            position: relative;
+            transition: background-color 0.5s ease;
         }
 
-        .loading-bar-container {
-            width: 220px; height: 4px; background: rgba(255,255,255,0.1);
-            border-radius: 10px; overflow: hidden; position: relative;
-        }
-        .loading-bar {
-            height: 100%; width: 0%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            box-shadow: 0 0 15px var(--primary);
-            animation: loadBar 1.8s ease-in-out forwards;
-        }
-        .loading-status {
-            font-size: 0.75rem; letter-spacing: 2px; color: rgba(255,255,255,0.6);
-            text-transform: uppercase; font-weight: 600;
-            animation: blink 1s infinite;
+        /* --- PRELOADER --- */
+        #preloader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #050505;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s cubic-bezier(0.8, 0, 0.2, 1), visibility 1s;
         }
 
-        .enter-btn {
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            color: #fff; border: none; padding: 18px 45px; border-radius: 50px;
-            font-size: 1.1rem; font-weight: 800; cursor: pointer; letter-spacing: 2px;
-            transition: all 0.4s ease; 
-            box-shadow: 0 0 30px rgba(192, 132, 252, 0.5), inset 0 0 10px rgba(255,255,255,0.2);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            display: flex; align-items: center; gap: 12px;
-            text-transform: uppercase;
-            animation: float 3s ease-in-out infinite, pulseGlow 2s infinite alternate;
+        #preloader.fade-out {
+            opacity: 0;
+            visibility: hidden;
         }
-        @media (pointer: fine) {
-            .enter-btn:hover {
-                transform: scale(1.05) translateY(-5px);
-                color: #000; background: #fff;
+
+        .loading-container { display: flex; flex-direction: column; align-items: center; width: 250px; max-width: 80vw; }
+        .loading-text { color: var(--text-main); font-size: 0.85rem; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 20px; font-weight: 600; opacity: 0.8; animation: pulse-glow 2s infinite alternate; text-align: center;}
+        .loading-bar-wrapper { width: 100%; height: 3px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; overflow: hidden; position: relative; }
+        .loading-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 10px; box-shadow: 0 0 15px var(--primary); transition: width 0.15s ease-out; }
+
+        .enter-container { display: none; flex-direction: column; align-items: center; opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease, transform 0.8s ease; text-align: center;}
+        .enter-container.show { display: flex; opacity: 1; transform: translateY(0); }
+        .btn-enter { position: relative; padding: 16px 40px; background: transparent; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50px; color: #fff; font-size: 1rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; overflow: hidden; transition: all 0.3s ease; backdrop-filter: blur(10px); }
+        .btn-enter::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent); transition: all 0.5s ease; }
+        .btn-enter:hover { border-color: var(--primary); box-shadow: 0 0 30px rgba(244, 114, 182, 0.4); transform: scale(1.05); }
+        .btn-enter:hover::before { left: 100%; }
+        .enter-hint { margin-top: 15px; font-size: 0.75rem; color: var(--text-muted); letter-spacing: 1px; animation: blink 1.5s infinite; }
+
+        @keyframes pulse-glow { 0% { text-shadow: 0 0 5px transparent; } 100% { text-shadow: 0 0 15px var(--primary); } }
+
+        /* --- BACKGROUND & LIGHTS --- */
+        #stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 50%, #1e1e24 0%, #09090b 100%); overflow: hidden; }
+        .star { position: absolute; background: #fff; border-radius: 50%; animation: twinkle infinite linear, moveUp infinite linear; opacity: 0; }
+        @keyframes twinkle { 0%, 100% { opacity: 0; } 50% { opacity: 0.8; box-shadow: 0 0 10px #fff; } }
+        @keyframes moveUp { from { transform: translateY(100vh); } to { transform: translateY(-100px); } }
+        .ambient-light { position: fixed; width: 50vw; height: 50vw; border-radius: 50%; filter: blur(100px); opacity: 0.15; z-index: -1; animation: float 10s infinite alternate ease-in-out; transition: background 1s ease; }
+        .light-1 { top: -10%; left: -10%; background: var(--primary); }
+        .light-2 { bottom: -10%; right: -10%; background: var(--secondary); animation-delay: -5s; }
+        @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(50px, 50px) scale(1.2); } }
+
+        /* --- BENTO GRID BASE --- */
+        .bento-container { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 20px; 
+            max-width: 1000px; 
+            width: 100%; 
+            perspective: 1000px; 
+        }
+
+        .bento-card {
+            background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 30px;
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); position: relative; transform-style: preserve-3d;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s;
+            opacity: 0; transform: translateY(40px);
+            animation: fadeUp 0.8s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
+            animation-play-state: paused; /* Ẩn đến khi load xong */
+        }
+        
+        .play-animations .bento-card { animation-play-state: running; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        
+        /* Hiệu ứng di chuột vào thẻ */
+        @media (hover: hover) {
+            .bento-card:hover { border-color: rgba(255, 255, 255, 0.2); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4); z-index: 10;}
+        }
+
+        /* Span mặc định trên Desktop */
+        .card-1 { animation-delay: 0.1s; grid-column: span 2; grid-row: span 2; }
+        .card-2 { animation-delay: 0.2s; grid-column: span 2; }
+        .card-3 { animation-delay: 0.3s; grid-column: span 2; }
+        .card-4 { animation-delay: 0.4s; grid-column: span 4; }
+        .card-5 { animation-delay: 0.5s; grid-column: span 4; }
+
+        /* --- CONTENT COMPONENTS --- */
+        
+        /* Profile */
+        .profile-wrapper { display: flex; flex-direction: column; height: 100%; justify-content: space-between; }
+        .profile-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .avatar-container { width: 110px; height: 110px; border-radius: 28px; background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 3px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); flex-shrink: 0; }
+        @media (hover: hover) { .bento-card:hover .avatar-container { transform: scale(1.05) rotate(5deg); } }
+        .avatar { width: 100%; height: 100%; border-radius: 25px; object-fit: cover; border: 3px solid var(--bg-color); }
+        .status-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 30px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); font-size: 0.8rem; font-weight: 600; }
+        .status-dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 10px #10b981; animation: pulse 2s infinite; }
+        .profile-info h1 { font-size: 2.5rem; font-weight: 800; margin-top: 20px; background: linear-gradient(to right, #fff, var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .typing-text { color: var(--primary); font-weight: 600; font-size: 1rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 25px; min-height: 24px; transition: color 0.5s ease; }
+        .cursor { animation: blink 1s infinite; }
+        .socials { display: flex; gap: 12px; flex-wrap: wrap;}
+        .social-btn { width: 45px; height: 45px; border-radius: 14px; background: rgba(255,255,255,0.05); color: var(--text-main); display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; border: 1px solid var(--card-border); transition: all 0.3s; }
+        @media (hover: hover) { .social-btn:hover { background: linear-gradient(45deg, var(--primary), var(--secondary)); border-color: transparent; transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); } }
+
+        /* Music */
+        .music-widget { display: flex; align-items: center; gap: 20px; height: 100%; }
+        .music-art-wrapper { position: relative; width: 80px; height: 80px; flex-shrink: 0; }
+        .music-art { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid var(--card-border); animation: spin 8s linear infinite paused; }
+        .music-art.playing { animation-play-state: running; border-color: var(--primary); box-shadow: 0 0 20px rgba(244, 114, 182, 0.3); }
+        .music-center-hole { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; background: var(--bg-color); border-radius: 50%; border: 1px solid var(--card-border); }
+        .music-info { flex-grow: 1; width: 100%; }
+        .music-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 2px;}
+        .music-artist { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; }
+        .music-controls { display: flex; align-items: center; gap: 15px; }
+        .play-btn { background: var(--text-main); color: var(--bg-color); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; transition: 0.2s; flex-shrink: 0; }
+        .play-btn:active { transform: scale(0.9); }
+        @media (hover: hover) { .play-btn:hover { transform: scale(1.1); } }
+        .progress-bar { flex-grow: 1; height: 5px; background: rgba(255,255,255,0.1); border-radius: 10px; cursor: pointer; position: relative; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 10px; transition: width 0.1s linear, background 0.5s ease; }
+
+        /* Tools / Quote */
+        .tools-card { display: flex; flex-direction: column; justify-content: center; height: 100%; gap: 15px; }
+        .quote-text { font-style: italic; color: #d4d4d8; font-size: 0.95rem; line-height: 1.6; border-left: 3px solid var(--primary); padding-left: 15px; transition: border-color 0.5s ease; }
+        .theme-selector { display: flex; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+        .theme-selector span { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-right: 5px; }
+        .color-btn { width: 25px; height: 25px; border-radius: 50%; border: 2px solid var(--card-border); cursor: pointer; transition: 0.3s; flex-shrink: 0; }
+        @media (hover: hover) { .color-btn:hover { transform: scale(1.2); } }
+        .c-pink { background: linear-gradient(135deg, #f472b6, #c084fc); } .c-blue { background: linear-gradient(135deg, #3b82f6, #60a5fa); } .c-green { background: linear-gradient(135deg, #10b981, #34d399); } .c-orange { background: linear-gradient(135deg, #f97316, #fb923c); } .c-purple { background: linear-gradient(135deg, #9333ea, #a855f7); } .c-cyan { background: linear-gradient(135deg, #06b6d4, #22d3ee); }
+
+        /* Tags / Games */
+        .section-title { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px;}
+        .section-title i { color: var(--primary); font-size: 1rem; transition: color 0.5s ease; }
+        .tags-wrapper { display: flex; flex-wrap: wrap; gap: 12px; }
+        .tag { padding: 10px 20px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); font-size: 0.9rem; font-weight: 500; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+        @media (hover: hover) { 
+            .bento-card:hover .tag { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
+            .tag:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); border-color: var(--primary); }
+        }
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .game-item { display: flex; align-items: center; gap: 15px; padding: 15px; border-radius: 16px; background: rgba(0,0,0,0.2); border: 1px solid transparent; transition: all 0.3s; }
+        @media (hover: hover) { .game-item:hover { border-color: var(--primary); background: rgba(255,255,255,0.05); transform: translateX(5px); } }
+        .game-icon { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: rgba(255,255,255,0.05); flex-shrink: 0;}
+        .game-details p:first-child { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
+        .game-details p:last-child { font-size: 1.1rem; font-weight: 700; color: #fff; word-break: break-all; }
+
+        @keyframes blink { 50% { opacity: 0; } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* =========================================
+           TỐI ƯU RESPONSIVE CHO NHIỀU THIẾT BỊ 
+        ========================================= */
+
+        /* TABLET & MÀN HÌNH NHỎ (<= 1024px) */
+        @media (max-width: 1024px) {
+            .bento-container { 
+                grid-template-columns: repeat(2, 1fr); 
             }
+            .card-1 { grid-column: span 2; grid-row: auto; }
+            .card-2 { grid-column: span 2; }
+            .card-3 { grid-column: span 2; }
+            .card-4 { grid-column: span 2; }
+            .card-5 { grid-column: span 2; }
         }
-        .enter-btn.hidden { display: none; }
-        #loader.hidden { opacity: 0; visibility: hidden; }
 
-        @keyframes pulseText { 0% { opacity: 0.7; text-shadow: 0 0 10px rgba(244, 114, 182, 0.3); } 100% { opacity: 1; text-shadow: 0 0 25px rgba(192, 132, 252, 0.8); } }
-        @keyframes loadBar { 0% { width: 0%; } 80% { width: 90%; } 100% { width: 100%; } }
-        @keyframes pulseGlow { 0% { box-shadow: 0 0 20px rgba(244, 114, 182, 0.4); } 100% { box-shadow: 0 0 45px rgba(192, 132, 252, 0.8); } }
-
-        /* --- CUSTOM CURSOR --- */
-        @media (pointer: fine) {
-            * { cursor: none !important; }
-            #cursor-dot { width: 6px; height: 6px; background: #fff; position: fixed; border-radius: 50%; pointer-events: none; z-index: 999999; box-shadow: 0 0 12px rgba(255,255,255,0.8); transition: transform 0.15s ease-out; }
-            #cursor-outline { 
-                width: 36px; height: 36px; border: 1px solid rgba(255,255,255,0.5); 
-                position: fixed; border-radius: 50%; pointer-events: none; z-index: 999998; 
-                transition: width 0.3s, height 0.3s, background 0.3s, border 0.3s;
-                will-change: transform;
+        /* MOBILE PHONE (<= 768px) */
+        @media (max-width: 768px) {
+            body { 
+                padding: 20px 15px; /* Giảm khoảng cách lề trên Mobile */
             }
-            body:active #cursor-dot { transform: scale(0.5); }
-            body:active #cursor-outline { transform: scale(1.5); background: rgba(255,255,255,0.05); }
-        }
-        @media (pointer: coarse) {
-            #cursor-dot, #cursor-outline { display: none !important; }
-        }
-
-        /* --- BACKGROUND LAYERS --- */
-        .gif-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            /* Ảnh nền anime mây trôi thơ mộng */
-            background-image: url('https://i.pinimg.com/originals/90/a6/f3/90a6f3bdf5dc4d8305c219582d921db5.gif'); 
-            background-size: cover; background-position: center;
-            opacity: 0.25; filter: blur(3px); z-index: -5;
-        }
-
-        .bg-blobs { position: fixed; inset: 0; z-index: -4; overflow: hidden; pointer-events: none; }
-        .blob { position: absolute; filter: blur(100px); opacity: 0.35; border-radius: 50%; animation: floatBlob 20s infinite alternate ease-in-out; transition: background 0.5s ease;}
-        .blob-1 { top: -20%; left: -10%; width: 50vw; height: 50vw; background: var(--primary); }
-        .blob-2 { bottom: -20%; right: -10%; width: 60vw; height: 60vw; background: var(--secondary); animation-delay: -5s; }
-        .blob-3 { top: 30%; left: 30%; width: 40vw; height: 40vw; background: var(--accent); animation-delay: -10s; opacity: 0.2; }
-
-        #canvas-stars { position: fixed; top: 0; left: 0; z-index: -3; opacity: 0.8; }
-
-        /* --- THEME SWITCHER --- */
-        .theme-switcher {
-            position: fixed; top: 20px; right: 20px; z-index: 1000;
-            display: flex; gap: 10px; background: rgba(0,0,0,0.3);
-            padding: 8px 12px; border-radius: 30px; backdrop-filter: blur(10px);
-            border: 1px solid var(--border);
-        }
-        .theme-btn {
-            width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2);
-            cursor: pointer; transition: transform 0.3s ease;
-        }
-        .theme-btn:hover { transform: scale(1.2); }
-        .theme-purple { background: linear-gradient(45deg, #f472b6, #c084fc); }
-        .theme-blue { background: linear-gradient(45deg, #3b82f6, #06b6d4); }
-        .theme-green { background: linear-gradient(45deg, #10b981, #34d399); }
-
-        /* --- HERO SECTION --- */
-        .hero {
-            min-height: 100vh; min-height: 100dvh;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 20px; text-align: center; position: relative;
-        }
-
-        .avatar-wrap {
-            position: relative; padding: 10px;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .avatar-container {
-            width: clamp(130px, 32vw, 180px); height: clamp(130px, 32vw, 180px);
-            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent));
-            background-size: 200% 200%;
-            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-            padding: 4px; 
-            animation: morphing 12s infinite alternate, gradientShift 6s ease infinite;
-            box-shadow: 0 0 40px rgba(244, 114, 182, 0.3), inset 0 0 20px rgba(255,255,255,0.2);
-            transition: all 0.5s ease;
-        }
-        
-        .avatar-container.music-active {
-            animation: morphing 10s infinite alternate, gradientShift 5s ease infinite, avatarPulse 2s infinite;
-        }
-
-        .avatar-img {
-            width: 100%; height: 100%; border-radius: inherit;
-            object-fit: cover; border: 4px solid rgba(15, 23, 42, 0.6);
-            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .avatar-container:hover .avatar-img { transform: scale(1.06) rotate(3deg); }
-
-        h1 {
-            font-size: clamp(2.5rem, 8vw, 5rem); font-weight: 800; letter-spacing: -1px;
-            margin-top: 25px; margin-bottom: 5px; position: relative;
-            background: linear-gradient(to right, #fff, var(--secondary), #fbcfe8, var(--primary));
-            background-size: 300%; -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shine 10s linear infinite;
-            text-shadow: 0 0 40px rgba(192, 132, 252, 0.2);
-        }
-
-        .typing-container {
-            font-size: clamp(0.7rem, 2vw, 0.85rem); letter-spacing: 4px; color: var(--primary);
-            text-transform: uppercase; margin-bottom: 40px; opacity: 0.9;
-            min-height: 20px; font-weight: 600; transition: color 0.5s;
-        }
-        .cursor-blink { animation: blink 1s infinite; }
-
-        /* --- CARDS & CONTAINERS --- */
-        .container { max-width: 850px; margin: 0 auto; padding: 0 20px 80px; }
-
-        .reveal { opacity: 0; transform: translateY(40px); transition: 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .reveal.active { opacity: 1; transform: translateY(0); }
-        .reveal.delay-1 { transition-delay: 0.1s; }
-        .reveal.delay-2 { transition-delay: 0.2s; }
-        .reveal.delay-3 { transition-delay: 0.3s; }
-
-        .glass-card {
-            background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border); border-radius: 30px; 
-            padding: clamp(25px, 5vw, 40px); margin-bottom: 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
-            position: relative; overflow: hidden; transition: border-color 0.5s ease;
-        }
-        
-        .glass-card::before {
-            content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent);
-            transform: skewX(-20deg); transition: 0.7s;
-        }
-        @media (pointer: fine) {
-            .glass-card:hover::before { left: 150%; }
-            .glass-card:hover { border-color: var(--border-hover); }
-        }
-
-        /* --- SỞ THÍCH TAGS --- */
-        .skills-flex { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 15px; }
-        .skill-tag {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border);
-            padding: 8px 16px; border-radius: 20px; font-size: 0.85rem;
-            transition: all 0.3s ease; cursor: default;
-            color: #e2e8f0; font-weight: 300; letter-spacing: 1px;
-        }
-        .skill-tag:hover {
-            background: var(--primary); color: #fff;
-            border-color: var(--primary); transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(244, 114, 182, 0.4);
-        }
-
-        /* --- SOCIAL ICONS --- */
-        .social-flex { display: flex; gap: clamp(12px, 3vw, 20px); justify-content: center; flex-wrap: wrap; margin-bottom: 20px;}
-        .magnetic-btn {
-            width: clamp(45px, 12vw, 55px); height: clamp(45px, 12vw, 55px); border-radius: 50%;
-            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: center;
-            color: #fff; text-decoration: none; font-size: 1.2rem;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            backdrop-filter: blur(10px);
-        }
-        @media (pointer: fine) {
-            .magnetic-btn:hover { background: transparent; transform: translateY(-8px); }
-            .magnetic-btn:nth-child(1):hover { color: #1877F2; box-shadow: 0 10px 20px rgba(24,119,242,0.3); border-color: #1877F2;}
-            .magnetic-btn:nth-child(2):hover { color: #E1306C; box-shadow: 0 10px 20px rgba(225,48,108,0.3); border-color: #E1306C;}
-            .magnetic-btn:nth-child(3):hover { color: #00f2fe; box-shadow: 0 10px 20px rgba(0,242,254,0.3); border-color: #00f2fe;}
-            .magnetic-btn:nth-child(4):hover { color: #5865F2; box-shadow: 0 10px 20px rgba(88,101,242,0.3); border-color: #5865F2;}
-        }
-
-        /* --- GAME SHOWCASE --- */
-        .game-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 25px; }
-        .game-badge {
-            padding: 20px; display: flex; align-items: center; gap: 18px;
-            background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
-            border-radius: 20px; border: 1px solid var(--border);
-            transition: all 0.4s ease; backdrop-filter: blur(10px);
-        }
-        @media (pointer: fine) {
-            .game-badge:hover { 
-                transform: translateY(-5px); 
-                background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
-                border-color: rgba(255,255,255,0.15); box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+            .bento-container { 
+                grid-template-columns: 1fr; /* Trở về 1 cột dọc duy nhất */
+                gap: 15px;
             }
-        }
-        .game-icon-wrap {
-            width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
-            font-size: 1.4rem; flex-shrink: 0; background: rgba(0,0,0,0.2);
-        }
+            .card-1, .card-2, .card-3, .card-4, .card-5 { 
+                grid-column: span 1; 
+            }
+            .bento-card { 
+                padding: 22px; /* Thu nhỏ padding trong từng thẻ */
+            }
+            
+            /* Căn giữa phần Profile */
+            .profile-top { 
+                flex-direction: column; 
+                align-items: center; 
+                gap: 15px; 
+            }
+            .profile-wrapper { 
+                align-items: center; 
+                text-align: center; 
+            }
+            .profile-info h1 { 
+                font-size: 2.2rem; /* Thu nhỏ tiêu đề */
+                margin-top: 15px;
+            }
+            .socials { 
+                justify-content: center; 
+            }
 
-        /* --- AUDIO PLAYER --- */
-        .music-player { display: flex; align-items: center; gap: 25px; position: relative;}
-        .album-art { 
-            width: clamp(65px, 15vw, 85px); height: clamp(65px, 15vw, 85px); 
-            border-radius: 50%; object-fit: cover; animation: rotate 10s linear infinite paused;
-            flex-shrink: 0; border: 2px solid rgba(255,255,255,0.1); 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5); transition: 0.4s;
-        }
-        .album-art.playing { animation-play-state: running; border-color: var(--secondary); box-shadow: 0 0 25px var(--secondary); opacity: 0.8;}
-
-        .song-info { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
-        .song-title-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 2px;}
-        
-        .visualizer { display: flex; gap: 3px; height: 16px; align-items: flex-end; opacity: 0; transition: 0.4s; }
-        .visualizer.active { opacity: 1; }
-        .visualizer span { width: 3px; background: var(--secondary); border-radius: 3px; animation: bounce 0.5s infinite alternate paused; }
-        .visualizer.active span { animation-play-state: running; }
-        .visualizer span:nth-child(1) { height: 40%; animation-delay: 0.1s; }
-        .visualizer span:nth-child(2) { height: 80%; animation-delay: 0.3s; }
-        .visualizer span:nth-child(3) { height: 60%; animation-delay: 0.2s; }
-        .visualizer span:nth-child(4) { height: 100%; animation-delay: 0.4s; }
-
-        .play-trigger {
-            width: 50px; height: 50px; border-radius: 50%; border: none;
-            background: rgba(255,255,255,0.1); color: #fff; backdrop-filter: blur(5px);
-            font-size: 1.1rem; cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            flex-shrink: 0; border: 1px solid rgba(255,255,255,0.2);
-        }
-        @media (pointer: fine) {
-            .play-trigger:hover { transform: scale(1.1); background: #fff; color: #000; box-shadow: 0 0 20px rgba(255,255,255,0.4); }
-        }
-
-        .prog-bar-container {
-            height: 6px; background: rgba(255,255,255,0.05);
-            border-radius: 10px; margin-top: 25px; overflow: hidden; cursor: pointer;
-            transition: height 0.2s;
-        }
-        @media (pointer: fine) { .prog-bar-container:hover { height: 8px; } }
-        
-        #prog-fill { 
-            height: 100%; width: 0%; 
-            background: linear-gradient(90deg, var(--primary), var(--secondary)); 
-            border-radius: 10px; box-shadow: 0 0 10px var(--secondary); transition: width 0.1s linear;
-        }
-
-        /* --- BACK TO TOP BUTTON --- */
-        .back-to-top {
-            position: fixed; bottom: 30px; right: 30px; width: 45px; height: 45px;
-            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
-            border-radius: 50%; color: var(--secondary); font-size: 1.2rem;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; opacity: 0; visibility: hidden; z-index: 999;
-            transition: all 0.3s ease; backdrop-filter: blur(10px);
-        }
-        .back-to-top.show { opacity: 1; visibility: visible; }
-        .back-to-top:hover { transform: translateY(-5px); background: var(--secondary); color: #000; box-shadow: 0 5px 15px rgba(192, 132, 252, 0.4); }
-
-        /* --- ANIMATIONS --- */
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-        @keyframes floatBlob { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(40px, -40px) scale(1.05); } }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes morphing { 0% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; } 50% { border-radius: 50% 50% 30% 70% / 50% 60% 40% 50%; } 100% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; } }
-        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        @keyframes shine { to { background-position: 300% center; } }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        @keyframes bounce { 0% { height: 20%; } 100% { height: 100%; } }
-        @keyframes avatarPulse { 0% { box-shadow: 0 0 40px rgba(244, 114, 182, 0.3), inset 0 0 20px rgba(255,255,255,0.2); } 50% { box-shadow: 0 0 60px rgba(192, 132, 252, 0.5), inset 0 0 30px rgba(255,255,255,0.3); } 100% { box-shadow: 0 0 40px rgba(244, 114, 182, 0.3), inset 0 0 20px rgba(255,255,255,0.2); } }
-
-        /* Responsive Mobile */
-        @media (max-width: 500px) {
-            .music-player { flex-direction: column; text-align: center; gap: 15px; }
-            .song-title-wrap { justify-content: center; }
-            .visualizer { display: none; }
-            .back-to-top { bottom: 20px; right: 20px; }
-            .theme-switcher { top: 10px; right: 10px; padding: 6px 10px; }
+            /* Tối ưu Music Widget cho Mobile */
+            .music-widget { 
+                flex-direction: column; 
+                text-align: center; 
+                gap: 15px;
+            }
+            .music-art-wrapper { 
+                width: 90px; height: 90px; /* Phóng to đĩa nhạc xíu để nổi bật */
+            }
+            .music-info { 
+                width: 100%;
+            }
+            .music-controls {
+                width: 100%;
+                justify-content: center; /* Căn giữa nút play và thanh tiến trình */
+            }
+            
+            /* Quote và Tools */
+            .tools-card { 
+                text-align: center; 
+            }
+            .quote-text {
+                border-left: none;
+                border-bottom: 2px solid var(--primary);
+                padding-left: 0;
+                padding-bottom: 10px;
+            }
+            .theme-selector { 
+                justify-content: center; 
+            }
+            
+            /* Danh sách Game */
+            .games-grid {
+                grid-template-columns: 1fr; /* Trên điện thoại để 1 dòng 1 game */
+            }
         }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="loader-content">
-            <div id="loadingWrapper" class="loading-wrapper">
-                <div class="loading-text">YILING 盧娜</div>
-                <div class="loading-greeting">Chào mừng bạn..✨</div>
-                <div class="loading-bar-container">
-                    <div class="loading-bar"></div>
-                </div>
-                <div class="loading-status">Đang tải...</div>
+    <div id="preloader">
+        <div class="loading-container" id="loading-state">
+            <div class="loading-text">Đang tải dữ liệu...</div>
+            <div class="loading-bar-wrapper">
+                <div class="loading-bar-fill" id="loading-bar"></div>
             </div>
-            <button id="enterBtn" class="enter-btn hidden">
-                <i class="fas fa-headphones-alt"></i> Vào
-            </button>
+        </div>
+        <div class="enter-container" id="enter-state">
+            <button class="btn-enter" id="btn-enter">Bắt đầu khám phá</button>
+            <div class="enter-hint">Bật âm thanh để có trải nghiệm tốt nhất</div>
         </div>
     </div>
 
-    <div class="theme-switcher reveal">
-        <div class="theme-btn theme-purple" onclick="setTheme('purple')" title="Mộng Mơ"></div>
-        <div class="theme-btn theme-blue" onclick="setTheme('blue')" title="Đại Dương"></div>
-        <div class="theme-btn theme-green" onclick="setTheme('green')" title="Mát Mẻ"></div>
-    </div>
+    <div id="stars-container"></div>
+    <div class="ambient-light light-1"></div>
+    <div class="ambient-light light-2"></div>
 
-    <div id="cursor-dot"></div>
-    <div id="cursor-outline"></div>
-
-    <div class="bg-blobs">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
-    </div>
-    <div class="gif-bg"></div>
-    <canvas id="canvas-stars"></canvas>
-
-    <section class="hero">
-        <div class="avatar-wrap">
-            <div class="avatar-container" id="avatarBox">
-                <img src="https://files.catbox.moe/j79cf5.jpg" class="avatar-img" alt="Yiling">
-            </div>
-        </div>
+    <div class="bento-container" id="main-content">
         
-        <h1>Yiling盧娜</h1>
-        
-        <div class="typing-container"><span id="typewriter"></span><span class="cursor-blink">|</span></div>
-        
-        <div class="social-flex reveal delay-1">
-            <a href="https://facebook.com/lunatis.ur" class="magnetic-btn"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://instagram.com/yiling.tdy" class="magnetic-btn"><i class="fab fa-instagram"></i></a>
-            <a href="https://tiktok.com/@thduyen.yiling" class="magnetic-btn"><i class="fab fa-tiktok"></i></a>
-            <a href="https://discord.gg/yZV5sdVDJC" class="magnetic-btn"><i class="fab fa-discord"></i></a>
-        </div>
-    </section>
-
-    <div class="container">
-        <div class="glass-card reveal delay-1">
-            <h2 style="font-size: 0.75rem; letter-spacing: 5px; color: var(--secondary); margin-bottom: 20px; text-transform: uppercase; text-align: center; font-weight: 800; transition: color 0.5s;">关于我自己</h2>
-            <p style="font-size: clamp(1.05rem, 3vw, 1.2rem); font-weight: 300; font-style: italic; opacity: 0.85; line-height: 1.9; text-align: center;">
-                "如果不是真心的，请不要对我太好。<br>我的心很容易误以为那是真爱。"
-            </p>
-        </div>
-
-        <div class="glass-card reveal delay-2">
-            <h2 style="font-size: 0.75rem; letter-spacing: 5px; color: var(--secondary); margin-bottom: 10px; text-transform: uppercase; text-align: center; font-weight: 800; transition: color 0.5s;">Sở Thích</h2>
-            <div class="skills-flex">
-                <span class="skill-tag">Nghe Nhạc</span>
-                <span class="skill-tag">Leo Rank Đêm</span>
-                <span class="skill-tag">Matcha Latte</span>
-                <span class="skill-tag">Mèo</span>
-            </div>
-        </div>
-
-        <div class="game-grid reveal delay-3">
-            <div class="game-badge">
-                <div class="game-icon-wrap" style="color: #60a5fa; box-shadow: inset 0 0 10px rgba(96, 165, 250, 0.2);"><i class="fas fa-shield-cat"></i></div>
-                <div>
-                    <p style="font-size: 0.7rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px;">Liên Quân Mobile</p>
-                    <p style="font-weight: 600; font-size: 1.15rem; letter-spacing: 0.5px;">Ƴiling盧娜</p>
+        <div class="bento-card card-1 tilt-card">
+            <div class="profile-wrapper">
+                <div class="profile-top">
+                    <div class="avatar-container">
+                        <img src="https://files.catbox.moe/j79cf5.jpg" alt="Yiling" class="avatar">
+                    </div>
+                    <div class="status-badge">
+                        <div class="status-dot"></div>
+                        <span id="live-clock">00:00:00</span>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="game-badge">
-                <div class="game-icon-wrap" style="color: var(--primary); box-shadow: inset 0 0 10px rgba(244, 114, 182, 0.2);"><i class="fas fa-dragon"></i></div>
-                <div>
-                    <p style="font-size: 0.7rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px;">王者荣耀</p>
-                    <p style="font-weight: 600; font-size: 1.15rem; letter-spacing: 0.5px;">hggan</p>
-                </div>
-            </div>
-            
-            <div class="game-badge">
-                <div class="game-icon-wrap" style="color: #facc15; box-shadow: inset 0 0 10px rgba(250,204,21,0.2);"><i class="fas fa-gem"></i></div>
-                <div>
-                    <p style="font-size: 0.7rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px;">Genshin Impact</p>
-                    <p style="font-weight: 600; font-size: 1.15rem; letter-spacing: 0.5px;">842578123</p>
+                
+                <div class="profile-info">
+                    <h1>Yiling盧娜</h1>
+                    <div class="typing-text"><span id="typewriter"></span><span class="cursor">|</span></div>
+                    
+                    <div class="socials">
+                        <a href="https://facebook.com/lunatis.ur" class="social-btn"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://instagram.com/yiling.tdy" class="social-btn"><i class="fab fa-instagram"></i></a>
+                        <a href="https://tiktok.com/@thduyen.yiling" class="social-btn"><i class="fab fa-tiktok"></i></a>
+                        <a href="https://discord.gg/yZV5sdVDJC" class="social-btn"><i class="fab fa-discord"></i></a>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="glass-card reveal delay-3" style="padding: clamp(20px, 4vw, 30px);">
-            <div class="music-player">
-                <img src="https://i.ytimg.com/vi/w8r5zDA4awM/maxresdefault.jpg" class="album-art" id="art">
-                <div class="song-info">
-                    <div class="song-title-wrap">
-                        <h3 style="font-size: clamp(1.15rem, 3vw, 1.3rem); font-weight: 800;">Em Không Khóc</h3>
-                        <div class="visualizer" id="visualizer">
-                            <span></span><span></span><span></span><span></span>
+        <div class="bento-card card-2 tilt-card">
+            <div class="music-widget">
+                <div class="music-art-wrapper">
+                    <img src="https://i.ytimg.com/vi/w8r5zDA4awM/maxresdefault.jpg" id="music-art" class="music-art">
+                    <div class="music-center-hole"></div>
+                </div>
+                <div class="music-info">
+                    <div class="music-title">Em Không Khóc</div>
+                    <div class="music-artist">buitruonglinh ft. Vũ Phụng Tiên</div>
+                    <div class="music-controls">
+                        <button class="play-btn" id="playBtn"><i class="fas fa-play" style="margin-left: 2px;"></i></button>
+                        <div class="progress-bar" id="progress-bar">
+                            <div class="progress-fill" id="progress-fill"></div>
                         </div>
                     </div>
-                    <p style="font-size: 0.85rem; opacity: 0.6; font-weight: 300;">buitruonglinh ft. Vũ Phụng Tiên</p>
                 </div>
-                <button class="play-trigger" id="playBtn"><i class="fas fa-play" style="margin-left: 3px;"></i></button>
-            </div>
-            <div class="prog-bar-container" id="prog-wrap">
-                <div id="prog-fill"></div>
             </div>
         </div>
-    </div>
 
-    <div class="back-to-top" id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-        <i class="fas fa-chevron-up"></i>
+        <div class="bento-card card-3 tilt-card">
+            <div class="tools-card">
+                <p class="quote-text">
+                    "如果不是真心的，请不要对我太好。<br>我的心很容易误以为那是真爱。"
+                </p>
+                <div class="theme-selector">
+                    <span>Màu sắc:</span>
+                    <div class="color-btn c-pink" onclick="setTheme('default')" title="Hồng/Tím"></div>
+                    <div class="color-btn c-blue" onclick="setTheme('blue')" title="Xanh Dương"></div>
+                    <div class="color-btn c-green" onclick="setTheme('green')" title="Xanh Lá"></div>
+                    <div class="color-btn c-orange" onclick="setTheme('orange')" title="Cam"></div>
+                    <div class="color-btn c-purple" onclick="setTheme('purple')" title="Tím Đậm"></div>
+                    <div class="color-btn c-cyan" onclick="setTheme('cyan')" title="Xanh Lơ"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bento-card card-4 tilt-card">
+            <h3 class="section-title"><i class="fas fa-star"></i> Sở thích</h3>
+            <div class="tags-wrapper">
+                <span class="tag"><i class="fas fa-headphones-alt"></i> Nghe Nhạc</span>
+                <span class="tag"><i class="fas fa-gamepad"></i> Leo Rank Đêm</span>
+                <span class="tag"><i class="fas fa-mug-hot"></i> Matcha Latte</span>
+                <span class="tag"><i class="fas fa-cat"></i> Mèo</span>
+            </div>
+        </div>
+
+        <div class="bento-card card-5 tilt-card">
+            <h3 class="section-title"><i class="fas fa-trophy"></i> Trò Chơi</h3>
+            <div class="games-grid">
+                <div class="game-item">
+                    <div class="game-icon" style="color: #60a5fa;"><i class="fas fa-shield-cat"></i></div>
+                    <div class="game-details">
+                        <p>Liên Quân Mobile</p>
+                        <p>ngxauYiling.</p>
+                    </div>
+                </div>
+                <div class="game-item">
+                    <div class="game-icon" style="color: #f472b6;"><i class="fas fa-dragon"></i></div>
+                    <div class="game-details">
+                        <p>王者荣耀</p>
+                        <p>hggan</p>
+                    </div>
+                </div>
+                <div class="game-item">
+                    <div class="game-icon" style="color: #facc15;"><i class="fas fa-gem"></i></div>
+                    <div class="game-details">
+                        <p>Genshin Impact</p>
+                        <p>842578123</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        // 0. Loading & Enter Screen
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('loadingWrapper').classList.add('hidden');
-                setTimeout(() => {
-                    document.getElementById('enterBtn').classList.remove('hidden');
-                }, 300); 
-            }, 1800); 
-        });
-
-        document.getElementById('enterBtn').addEventListener('click', () => {
-            document.getElementById('loader').classList.add('hidden');
-            if (!isPlaying) togglePlay();
-            setTimeout(() => { reveal(); type(); }, 400);
-        });
-
-        const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-
-        // 1. Smooth Custom Cursor
-        if (!isTouchDevice) {
-            const dot = document.getElementById('cursor-dot');
-            const outline = document.getElementById('cursor-outline');
-            let mouseX = 0, mouseY = 0, outlineX = 0, outlineY = 0;
-
-            window.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX; mouseY = e.clientY;
-                dot.style.top = mouseY + 'px'; dot.style.left = mouseX + 'px';
-            });
-
-            function animateCursor() {
-                outlineX += (mouseX - outlineX) * 0.15; outlineY += (mouseY - outlineY) * 0.15;
-                outline.style.transform = `translate(${outlineX - 18}px, ${outlineY - 18}px)`;
-                requestAnimationFrame(animateCursor);
-            }
-            animateCursor();
-
-            document.querySelectorAll('a, button, .prog-bar-container, .game-badge, .theme-btn, .skill-tag').forEach(el => {
-                el.onmouseenter = () => {
-                    outline.style.width = '55px'; outline.style.height = '55px';
-                    outline.style.background = 'rgba(255,255,255,0.1)'; outline.style.borderColor = '#fff';
-                    outline.style.transform = `translate(${outlineX - 27.5}px, ${outlineY - 27.5}px)`;
-                };
-                el.onmouseleave = () => {
-                    outline.style.width = '36px'; outline.style.height = '36px';
-                    outline.style.background = 'transparent'; outline.style.borderColor = 'rgba(255,255,255,0.5)';
-                };
-            });
-        }
-
-        // 2. Scroll Reveal & Back to Top
-        const backToTopBtn = document.getElementById('backToTop');
-        function reveal() {
-            const reveals = document.querySelectorAll('.reveal');
-            reveals.forEach(r => {
-                const windowHeight = window.innerHeight;
-                const elementTop = r.getBoundingClientRect().top;
-                if (elementTop < windowHeight - 50) r.classList.add('active');
-            });
-
-            if (window.scrollY > 300) {
-                backToTopBtn.classList.add('show');
-            } else {
-                backToTopBtn.classList.remove('show');
-            }
-        }
-        window.addEventListener('scroll', reveal);
-
-        // 3. Poly-Grid Particles
-        const canvas = document.getElementById('canvas-stars');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-
-        function initStars() {
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            const particleCount = window.innerWidth < 768 ? 30 : 60; 
-            particles = Array.from({length: particleCount}, () => ({
-                x: Math.random() * canvas.width, y: Math.random() * canvas.height,
-                size: Math.random() * 1.5, vx: (Math.random() - 0.5) * 0.2, vy: (Math.random() - 0.5) * 0.2
-            }));
-        }
-
-        function drawStars() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach((p, i) => {
-                p.x += p.vx; p.y += p.vy;
-                if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                
-                ctx.fillStyle = 'rgba(255,255,255,0.4)';
-                ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
-
-                for(let j = i + 1; j < particles.length; j++) {
-                    const p2 = particles[j];
-                    const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-                    if(dist < 150) {
-                        ctx.strokeStyle = `rgba(255, 255, 255, ${0.08 - dist/2000})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
-                    }
-                }
-            });
-            requestAnimationFrame(drawStars);
-        }
-
-        // 4. Typing Effect
-        const txt = "MiCay, MatchaLatte va Anh";
-        let idx = 0;
-        function type() {
-            if(idx < txt.length) {
-                document.getElementById('typewriter').textContent += txt[idx++];
-                setTimeout(type, 100);
-            }
-        }
-
-        // 5. Audio Player
+        /* --- KHỞI TẠO BIẾN --- */
         const audio = new Audio('https://files.catbox.moe/wmqyfw.mp3');
         const playBtn = document.getElementById('playBtn');
-        const art = document.getElementById('art');
-        const visualizer = document.getElementById('visualizer');
-        const avatarBox = document.getElementById('avatarBox');
+        const musicArt = document.getElementById('music-art');
+        const progressFill = document.getElementById('progress-fill');
+        const progressBar = document.getElementById('progress-bar');
         let isPlaying = false;
 
-        function togglePlay() {
-            if(!isPlaying) {
+        /* 0. Logic xử lý Preloader */
+        window.addEventListener('load', () => {
+            let count = 0;
+            const barElement = document.getElementById('loading-bar');
+            
+            let interval = setInterval(() => {
+                count += Math.floor(Math.random() * 15) + 5; 
+                if (count >= 100) {
+                    count = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        document.getElementById('loading-state').style.display = 'none';
+                        const enterState = document.getElementById('enter-state');
+                        enterState.classList.add('show');
+                    }, 400); 
+                }
+                barElement.style.width = count + '%';
+            }, 100);
+        });
+
+        document.getElementById('btn-enter').addEventListener('click', function() {
+            const preloader = document.getElementById('preloader');
+            preloader.classList.add('fade-out'); 
+            
+            document.getElementById('main-content').classList.add('play-animations'); 
+            
+            audio.play();
+            playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            musicArt.classList.add('playing');
+            isPlaying = true;
+
+            setTimeout(typeWriter, 800);
+        });
+
+        /* 1. Tạo hiệu ứng Bầu trời sao (Animated Stars) */
+        function createStars() {
+            const container = document.getElementById('stars-container');
+            // Giảm số sao trên thiết bị màn hình nhỏ để tăng hiệu năng
+            const isMobile = window.innerWidth <= 768;
+            const starCount = isMobile ? 50 : 100; 
+            
+            for (let i = 0; i < starCount; i++) {
+                let star = document.createElement('div');
+                star.className = 'star';
+                let size = Math.random() * 3 + 1 + 'px';
+                star.style.width = size;
+                star.style.height = size;
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.top = Math.random() * 100 + 'vh';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's, ' + (Math.random() * 50 + 20) + 's';
+                star.style.animationDelay = (Math.random() * 5) + 's, ' + (Math.random() * -50) + 's';
+                container.appendChild(star);
+            }
+        }
+        createStars();
+
+        /* 2. Hiệu ứng gõ chữ (Typing Effect) */
+        const txt = "MiCay, MatchaLatte va Anh";
+        let idx = 0;
+        function typeWriter() {
+            if (idx < txt.length) {
+                document.getElementById('typewriter').textContent += txt[idx++];
+                setTimeout(typeWriter, 100);
+            }
+        }
+
+        /* 3. Đồng hồ thời gian thực (Live Clock) */
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('vi-VN', { hour12: false });
+            document.getElementById('live-clock').textContent = timeString;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        /* 4. Bộ chuyển đổi màu sắc (Theme Switcher) */
+        function setTheme(themeName) {
+            if(themeName === 'default') {
+                document.documentElement.removeAttribute('data-theme');
+            } else {
+                document.documentElement.setAttribute('data-theme', themeName);
+            }
+        }
+
+        /* 5. Cài đặt các chức năng Music Player */
+        playBtn.addEventListener('click', () => {
+            if (!isPlaying) {
                 audio.play();
                 playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                playBtn.style.background = '#fff'; playBtn.style.color = '#000';
-                art.classList.add('playing');
-                visualizer.classList.add('active');
-                avatarBox.classList.add('music-active'); 
+                musicArt.classList.add('playing');
             } else {
                 audio.pause();
-                playBtn.innerHTML = '<i class="fas fa-play" style="margin-left: 3px;"></i>';
-                playBtn.style.background = 'rgba(255,255,255,0.1)'; playBtn.style.color = '#fff';
-                art.classList.remove('playing');
-                visualizer.classList.remove('active');
-                avatarBox.classList.remove('music-active'); 
+                playBtn.innerHTML = '<i class="fas fa-play" style="margin-left: 2px;"></i>';
+                musicArt.classList.remove('playing');
             }
             isPlaying = !isPlaying;
-        }
+        });
 
-        playBtn.onclick = togglePlay;
-
-        audio.ontimeupdate = () => {
-            document.getElementById('prog-fill').style.width = (audio.currentTime/audio.duration)*100 + '%';
-        };
-        
-        audio.onended = () => {
-            isPlaying = true; togglePlay();
-            document.getElementById('prog-fill').style.width = '0%';
-        };
-
-        const progWrap = document.getElementById('prog-wrap');
-        const updateAudioProgress = (e) => {
-            const rect = progWrap.getBoundingClientRect();
-            const clickX = (e.clientX || e.touches[0].clientX) - rect.left;
-            audio.currentTime = (clickX / rect.width) * audio.duration;
-        };
-        
-        progWrap.addEventListener('click', updateAudioProgress);
-        progWrap.addEventListener('touchmove', updateAudioProgress);
-
-        // 6. Theme Switcher Logic
-        function setTheme(color) {
-            const root = document.documentElement;
-            if (color === 'purple') {
-                root.style.setProperty('--primary', '#f472b6');
-                root.style.setProperty('--secondary', '#c084fc');
-                root.style.setProperty('--accent', '#818cf8');
-            } else if (color === 'blue') {
-                root.style.setProperty('--primary', '#3b82f6');
-                root.style.setProperty('--secondary', '#60a5fa');
-                root.style.setProperty('--accent', '#93c5fd');
-            } else if (color === 'green') {
-                root.style.setProperty('--primary', '#10b981');
-                root.style.setProperty('--secondary', '#34d399');
-                root.style.setProperty('--accent', '#6ee7b7');
+        audio.addEventListener('timeupdate', () => {
+            if (audio.duration) {
+                progressFill.style.width = (audio.currentTime / audio.duration) * 100 + '%';
             }
-        }
+        });
 
-        // Run Init
-        initStars(); drawStars(); 
-        window.addEventListener('resize', () => { initStars(); reveal(); });
+        audio.addEventListener('ended', () => {
+            isPlaying = false;
+            playBtn.innerHTML = '<i class="fas fa-play" style="margin-left: 2px;"></i>';
+            musicArt.classList.remove('playing');
+            progressFill.style.width = '0%';
+        });
+
+        function seek(e) {
+            const rect = progressBar.getBoundingClientRect();
+            // Xử lý tốt cả click chuột và chạm trên màn hình cảm ứng
+            const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            const clickX = clientX - rect.left;
+            
+            // Giới hạn trong khoảng width của thanh bar để không bị tràn
+            let percentage = clickX / rect.width;
+            percentage = Math.max(0, Math.min(1, percentage));
+            
+            if(audio.duration) audio.currentTime = percentage * audio.duration;
+        }
+        
+        progressBar.addEventListener('click', seek);
+        progressBar.addEventListener('touchmove', seek);
+
+        /* 6. Hiệu ứng 3D Tilt - CHỈ CHẠY TRÊN MÁY TÍNH CÓ CHUỘT */
+        // Dùng matchMedia để check xem thiết bị có dùng con trỏ (chuột) không
+        if (window.matchMedia("(pointer: fine)").matches) {
+            const cards = document.querySelectorAll('.tilt-card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top; 
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    // Giảm độ nhạy nghiêng để trải nghiệm tự nhiên hơn
+                    const rotateX = ((y - centerY) / centerY) * -5; 
+                    const rotateY = ((x - centerX) / centerX) * 5;
+                    
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+                    card.style.transition = 'transform 0.5s ease';
+                });
+                
+                card.addEventListener('mouseenter', () => {
+                    card.style.transition = 'none'; 
+                });
+            });
+        }
     </script>
 </body>
 </html>
