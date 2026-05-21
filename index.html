@@ -99,18 +99,16 @@
             transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s;
             opacity: 0; transform: translateY(40px);
             animation: fadeUp 0.8s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
-            animation-play-state: paused; /* Ẩn đến khi load xong */
+            animation-play-state: paused;
         }
         
         .play-animations .bento-card { animation-play-state: running; }
         @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
         
-        /* Hiệu ứng di chuột vào thẻ */
         @media (hover: hover) {
             .bento-card:hover { border-color: rgba(255, 255, 255, 0.2); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4); z-index: 10;}
         }
 
-        /* Span mặc định trên Desktop */
         .card-1 { animation-delay: 0.1s; grid-column: span 2; grid-row: span 2; }
         .card-2 { animation-delay: 0.2s; grid-column: span 2; }
         .card-3 { animation-delay: 0.3s; grid-column: span 2; }
@@ -178,91 +176,33 @@
         @keyframes blink { 50% { opacity: 0; } }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* =========================================
-           TỐI ƯU RESPONSIVE CHO NHIỀU THIẾT BỊ 
-        ========================================= */
-
-        /* TABLET & MÀN HÌNH NHỎ (<= 1024px) */
+        /* TỐI ƯU RESPONSIVE */
         @media (max-width: 1024px) {
-            .bento-container { 
-                grid-template-columns: repeat(2, 1fr); 
-            }
+            .bento-container { grid-template-columns: repeat(2, 1fr); }
             .card-1 { grid-column: span 2; grid-row: auto; }
-            .card-2 { grid-column: span 2; }
-            .card-3 { grid-column: span 2; }
-            .card-4 { grid-column: span 2; }
-            .card-5 { grid-column: span 2; }
+            .card-2, .card-3, .card-4, .card-5 { grid-column: span 2; }
         }
 
-        /* MOBILE PHONE (<= 768px) */
         @media (max-width: 768px) {
-            body { 
-                padding: 20px 15px; /* Giảm khoảng cách lề trên Mobile */
-            }
-            .bento-container { 
-                grid-template-columns: 1fr; /* Trở về 1 cột dọc duy nhất */
-                gap: 15px;
-            }
-            .card-1, .card-2, .card-3, .card-4, .card-5 { 
-                grid-column: span 1; 
-            }
-            .bento-card { 
-                padding: 22px; /* Thu nhỏ padding trong từng thẻ */
-            }
+            body { padding: 20px 15px; }
+            .bento-container { grid-template-columns: 1fr; gap: 15px; }
+            .card-1, .card-2, .card-3, .card-4, .card-5 { grid-column: span 1; }
+            .bento-card { padding: 22px; }
             
-            /* Căn giữa phần Profile */
-            .profile-top { 
-                flex-direction: column; 
-                align-items: center; 
-                gap: 15px; 
-            }
-            .profile-wrapper { 
-                align-items: center; 
-                text-align: center; 
-            }
-            .profile-info h1 { 
-                font-size: 2.2rem; /* Thu nhỏ tiêu đề */
-                margin-top: 15px;
-            }
-            .socials { 
-                justify-content: center; 
-            }
+            .profile-top { flex-direction: column; align-items: center; gap: 15px; }
+            .profile-wrapper { align-items: center; text-align: center; }
+            .profile-info h1 { font-size: 2.2rem; margin-top: 15px; }
+            .socials { justify-content: center; }
 
-            /* Tối ưu Music Widget cho Mobile */
-            .music-widget { 
-                flex-direction: column; 
-                text-align: center; 
-                gap: 15px;
-            }
-            .music-art-wrapper { 
-                width: 90px; height: 90px; /* Phóng to đĩa nhạc xíu để nổi bật */
-            }
-            .music-info { 
-                width: 100%;
-            }
-            .music-controls {
-                width: 100%;
-                justify-content: center; /* Căn giữa nút play và thanh tiến trình */
-            }
+            .music-widget { flex-direction: column; text-align: center; gap: 15px; }
+            .music-art-wrapper { width: 90px; height: 90px; }
+            .music-info { width: 100%; }
+            .music-controls { width: 100%; justify-content: center; }
             
-            /* Quote và Tools */
-            .tools-card { 
-                text-align: center; 
-            }
-            .quote-text {
-                border-left: none;
-                border-bottom: 2px solid var(--primary);
-                padding-left: 0;
-                padding-bottom: 10px;
-            }
-            .theme-selector { 
-                justify-content: center; 
-            }
-            
-            /* Danh sách Game */
-            .games-grid {
-                grid-template-columns: 1fr; /* Trên điện thoại để 1 dòng 1 game */
-            }
+            .tools-card { text-align: center; }
+            .quote-text { border-left: none; border-bottom: 2px solid var(--primary); padding-left: 0; padding-bottom: 10px; }
+            .theme-selector { justify-content: center; }
+            .games-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -270,13 +210,13 @@
 
     <div id="preloader">
         <div class="loading-container" id="loading-state">
-            <div class="loading-text">Đang tải dữ liệu...</div>
+            <div class="loading-text">网页正在加载中</div>
             <div class="loading-bar-wrapper">
                 <div class="loading-bar-fill" id="loading-bar"></div>
             </div>
         </div>
         <div class="enter-container" id="enter-state">
-            <button class="btn-enter" id="btn-enter">Bắt đầu khám phá</button>
+            <button class="btn-enter" id="btn-enter">Lại đây tớ bảo</button>
             <div class="enter-hint">Bật âm thanh để có trải nghiệm tốt nhất</div>
         </div>
     </div>
@@ -300,7 +240,7 @@
                 </div>
                 
                 <div class="profile-info">
-                    <h1>Yiling盧娜</h1>
+                    <h1>黄玉灵 (Yiling)</h1>
                     <div class="typing-text"><span id="typewriter"></span><span class="cursor">|</span></div>
                     
                     <div class="socials">
@@ -316,12 +256,12 @@
         <div class="bento-card card-2 tilt-card">
             <div class="music-widget">
                 <div class="music-art-wrapper">
-                    <img src="https://i.ytimg.com/vi/w8r5zDA4awM/maxresdefault.jpg" id="music-art" class="music-art">
+                    <img src="https://files.catbox.moe/sitcln.jpg" id="music-art" class="music-art">
                     <div class="music-center-hole"></div>
                 </div>
                 <div class="music-info">
-                    <div class="music-title">Em Không Khóc</div>
-                    <div class="music-artist">buitruonglinh ft. Vũ Phụng Tiên</div>
+                    <div class="music-title">海屿你</div>
+                    <div class="music-artist">马也Crabbit / Cole先生</div>
                     <div class="music-controls">
                         <button class="play-btn" id="playBtn"><i class="fas fa-play" style="margin-left: 2px;"></i></button>
                         <div class="progress-bar" id="progress-bar">
@@ -389,8 +329,17 @@
     </div>
 
     <script>
-        /* --- KHỞI TẠO BIẾN --- */
-        const audio = new Audio('https://files.catbox.moe/wmqyfw.mp3');
+        /* --- KHỞI TẠO BIẾN CHO NHẠC --- */
+        /*
+           [QUAN TRỌNG]: ĐỂ ĐỔI NHẠC THÀNH BÀI "海屿你", BẠN HÃY LÀM THEO SAU:
+           1. Tải file bài "海屿你.mp3" của bạn lên trang https://catbox.moe/
+           2. Lấy đường link file (ví dụ: https://files.catbox.moe/xxxxxx.mp3)
+           3. Dán link đó thay thế vào link có sẵn bên dưới.
+           
+           (Tạm thời mình đang để link nhạc cũ để web bạn không bị lỗi âm thanh khi chạy thử nhé)
+        */
+        const audio = new Audio('https://files.catbox.moe/9kiaxj.mp3'); 
+        
         const playBtn = document.getElementById('playBtn');
         const musicArt = document.getElementById('music-art');
         const progressFill = document.getElementById('progress-fill');
@@ -431,10 +380,9 @@
             setTimeout(typeWriter, 800);
         });
 
-        /* 1. Tạo hiệu ứng Bầu trời sao (Animated Stars) */
+        /* 1. Tạo hiệu ứng Bầu trời sao */
         function createStars() {
             const container = document.getElementById('stars-container');
-            // Giảm số sao trên thiết bị màn hình nhỏ để tăng hiệu năng
             const isMobile = window.innerWidth <= 768;
             const starCount = isMobile ? 50 : 100; 
             
@@ -510,11 +458,9 @@
 
         function seek(e) {
             const rect = progressBar.getBoundingClientRect();
-            // Xử lý tốt cả click chuột và chạm trên màn hình cảm ứng
             const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
             const clickX = clientX - rect.left;
             
-            // Giới hạn trong khoảng width của thanh bar để không bị tràn
             let percentage = clickX / rect.width;
             percentage = Math.max(0, Math.min(1, percentage));
             
@@ -525,7 +471,6 @@
         progressBar.addEventListener('touchmove', seek);
 
         /* 6. Hiệu ứng 3D Tilt - CHỈ CHẠY TRÊN MÁY TÍNH CÓ CHUỘT */
-        // Dùng matchMedia để check xem thiết bị có dùng con trỏ (chuột) không
         if (window.matchMedia("(pointer: fine)").matches) {
             const cards = document.querySelectorAll('.tilt-card');
             cards.forEach(card => {
@@ -535,7 +480,6 @@
                     const y = e.clientY - rect.top; 
                     const centerX = rect.width / 2;
                     const centerY = rect.height / 2;
-                    // Giảm độ nhạy nghiêng để trải nghiệm tự nhiên hơn
                     const rotateX = ((y - centerY) / centerY) * -5; 
                     const rotateY = ((x - centerX) / centerX) * 5;
                     
